@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dados RPG 🎲</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: black;
+            color: white;
+        }
+        #diceTitle {
+            font-size: 2em;
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-top: 20px;
+        }
+        #modifierSelection {
+            margin-right: 20px;
+        }
+        .buttonContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .diceButton {
+            margin-bottom: 10px;
+        }
+        #resultContainer {
+            margin-top: 20px;
+        }
+        #result {
+            font-size: 1.2em;
+        }
+        #historyTitle {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+        #historyContainer {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="diceTitle">🎲</div>
+
+    <div class="container">
+        <div id="modifierSelection">
+            <div><strong>Selecione um modificador para cada atributo:</strong></div>
+            <div>
+                💪 Força:
+                <select id="ForçaModifier">
+                    <option value="-6">0️⃣</option>
+                    <option value="0" selected>➖</option>
+                    <option value="4">1️⃣</option>
+                    <option value="8">2️⃣</option>
+                    <option value="12">3️⃣</option>
+                    <option value="16">4️⃣</option>
+                    <option value="20">5️⃣</option>
+                </select>
+            </div>
+            <div>
+                🐇 Agilidade:
+                <select id="AgilidadeModifier">
+                    <option value="-6">0️⃣</option>
+                    <option value="0" selected>➖</option>
+                    <option value="4">1️⃣</option>
+                    <option value="8">2️⃣</option>
+                    <option value="12">3️⃣</option>
+                    <option value="16">4️⃣</option>
+                    <option value="20">5️⃣</option>
+                </select>
+            </div>
+            <div>
+                🛡 Constituição:
+                <select id="ConstituiçãoModifier">
+                    <option value="-6">0️⃣</option>
+                    <option value="0" selected>➖</option>
+                    <option value="4">1️⃣</option>
+                    <option value="8">2️⃣</option>
+                    <option value="12">3️⃣</option>
+                    <option value="16">4️⃣</option>
+                    <option value="20">5️⃣</option>
+                </select>
+            </div>
+            <div>
+                👀 Percepção:
+                <select id="PercepçãoModifier">
+                    <option value="-6">0️⃣</option>
+                    <option value="0" selected>➖</option>
+                    <option value="4">1️⃣</option>
+                    <option value="8">2️⃣</option>
+                    <option value="12">3️⃣</option>
+                    <option value="16">4️⃣</option>
+                    <option value="20">5️⃣</option>
+                </select>
+            </div>
+            <div>
+                🧠 Sabedoria:
+                <select id="SabedoriaModifier">
+                    <option value="-6">0️⃣</option>
+                    <option value="0" selected>➖</option>
+                    <option value="4">1️⃣</option>
+                    <option value="8">2️⃣</option>
+                    <option value="12">3️⃣</option>
+                    <option value="16">4️⃣</option>
+                    <option value="20">5️⃣</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="buttonContainer">
+            <button class="diceButton" onclick="rollDice('Força')">💪 Força</button>
+            <button class="diceButton" onclick="rollDice('Agilidade')">🐇 Agilidade</button>
+            <button class="diceButton" onclick="rollDice('Constituição')">🛡 Constituição</button>
+            <button class="diceButton" onclick="rollDice('Percepção')">👀 Percepção</button>
+            <button class="diceButton" onclick="rollDice('Sabedoria')">🧠 Sabedoria</button>
+        </div>
+    </div>
+
+    <div id="resultContainer">
+        <div><strong>Resultado:</strong> <span id="result">-</span></div>
+    </div>
+
+    <div id="historyTitle">Histórico</div>
+    <div id="historyContainer"></div>
+
+    <script>
+        let history = [];
+
+        function rollDice(attribute) {
+            const value = Math.floor(Math.random() * 20) + 1;
+            const modifier = parseInt(document.getElementById(`${attribute}Modifier`).value);
+
+            // Leva em conta a soma também para o valor máximo
+            const maxPossibleValue = value + modifier + 20;
+            const result = value + modifier;
+
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = result;
+
+            // Adiciona ao histórico
+            if (history.length >= 5) {
+                history.shift(); // Remove o mais antigo se houver 5 valores no histórico
+            }
+            history.push(`${attribute}: ${result}`);
+            updateHistory();
+
+            // Muda a cor do resultado com base nos limites
+            resultElement.style.color = (value === 1) ? 'red' : (value === 20) ? 'yellow' : 'white';
+        }
+
+        function updateHistory() {
+            const historyContainer = document.getElementById('historyContainer');
+            historyContainer.innerHTML = '';
+
+            for (let i = history.length - 1; i >= 0; i--) {
+                const listItem = document.createElement('div');
+                const isCritical = history[i].includes('20') && history[i].includes('yellow');
+                const isFailure = history[i].includes('1') && history[i].includes('red');
+
+                if (isCritical) {
+                    listItem.style.color = 'yellow';
+                } else if (isFailure) {
+                    listItem.style.color = 'red';
+                }
+
+                listItem.textContent = history[i];
+                historyContainer.appendChild(listItem);
+            }
+        }
+    </script>
+</body>
+</html>

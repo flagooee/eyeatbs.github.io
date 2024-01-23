@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dados RPG 🎲</title>
     <style>
         body {
             display: flex;
@@ -48,10 +47,40 @@
         #historyContainer {
             margin-top: 10px;
         }
+        /* Novo estilo para o RPG 🎲 */
+        .rpg-container {
+            margin-top: 20px; /* Ajustei o espaçamento entre o título e a seção RPG 🎲 */
+            text-align: center;
+        }
+        .rpg-input {
+            width: 80px;
+            text-align: center;
+            margin: 5px;
+            border: none;
+            padding: 5px;
+            color: black;
+        }
+        .rpg-input-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
     </style>
+    <title>⚔</title>
 </head>
 <body>
     <div id="diceTitle">🎲</div>
+
+    <!-- Novo código RPG 🎲 -->
+    <div class="rpg-container">
+        <div class="rpg-input-container">
+            <input class="rpg-input" type="text" placeholder="Nome">
+            <input class="rpg-input" type="text" placeholder="Idade">
+            <input class="rpg-input" type="text" placeholder="Raça">
+        </div>
+        <p>VIDA <input class="vida-input" type="number" placeholder="0"> / <input class="vida-input" type="number" placeholder="0"></p>
+        <p>MANA <input class="mana-input" type="number" placeholder="0"> / <input class="mana-input" type="number" placeholder="0"></p>
+    </div>
 
     <div class="container">
         <div id="modifierSelection">
@@ -179,5 +208,74 @@
             }
         }
     </script>
-</body>
-</html>
+<!-- Adicione os botões abaixo do seu script existente -->
+<div style="margin-top: 20px; text-align: center;">
+    <button onclick="exportCharacter()">Exportar</button>
+    <input type="file" id="importFile" accept=".json" style="display:none;">
+    <button onclick="importCharacter()">Importar</button>
+</div>
+
+<script>
+    // Função para exportar os dados do personagem em JSON
+    function exportCharacter() {
+        const characterData = {
+            nome: document.querySelector('.rpg-input:nth-child(1)').value,
+            idade: document.querySelector('.rpg-input:nth-child(2)').value,
+            raca: document.querySelector('.rpg-input:nth-child(3)').value,
+            vida: document.querySelector('.vida-input:nth-child(2)').value,
+            mana: document.querySelector('.mana-input:nth-child(2)').value,
+            forcaModifier: document.getElementById('ForçaModifier').value,
+            agilidadeModifier: document.getElementById('AgilidadeModifier').value,
+            constituicaoModifier: document.getElementById('ConstituiçãoModifier').value,
+            percepcaoModifier: document.getElementById('PercepçãoModifier').value,
+            sabedoriaModifier: document.getElementById('SabedoriaModifier').value,
+        };
+
+        const characterJSON = JSON.stringify(characterData);
+        const blob = new Blob([characterJSON], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'characterData.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // Função para importar os dados do personagem de um arquivo JSON
+    function importCharacter() {
+        const importInput = document.getElementById('importFile');
+
+        importInput.addEventListener('change', function () {
+            const file = importInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const importedData = JSON.parse(e.target.result);
+
+                    // Atualizar os valores no DOM com os dados importados
+                    document.querySelector('.rpg-input:nth-child(1)').value = importedData.nome;
+                    document.querySelector('.rpg-input:nth-child(2)').value = importedData.idade;
+                    document.querySelector('.rpg-input:nth-child(3)').value = importedData.raca;
+                    document.querySelector('.vida-input:nth-child(2)').value = importedData.vida;
+                    document.querySelector('.mana-input:nth-child(2)').value = importedData.mana;
+                    document.getElementById('ForçaModifier').value = importedData.forcaModifier;
+                    document.getElementById('AgilidadeModifier').value = importedData.agilidadeModifier;
+                    document.getElementById('ConstituiçãoModifier').value = importedData.constituicaoModifier;
+                    document.getElementById('PercepçãoModifier').value = importedData.percepcaoModifier;
+                    document.getElementById('SabedoriaModifier').value = importedData.sabedoriaModifier;
+                };
+
+                reader.readAsText(file);
+            }
+        });
+
+        // Simular o clique no botão de importar
+        importInput.click();
+    }
+</script>
+
